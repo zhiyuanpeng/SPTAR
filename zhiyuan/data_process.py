@@ -211,6 +211,20 @@ def sample_corpus_v2(dataset_name, ratio: int = 20, train_num: int = 50, weak_nu
             json.dump(reduce_doc, f)
             f.write("\n")
 
+def load_dl(dir):
+    """
+    load dl2019 dl2020 queries and qrels
+    """
+    queries = {}
+    year = dir.split("_")[-1]
+    with open(join(dir, f"queries_{year}", "raw.tsv")) as f:
+        for line in f:
+            qid, query = line.strip().split("\t")
+            queries[qid] = query
+    qrels_binary = read_json(join(dir, "qrel_binary.json"))[0]
+    qrels = read_json(join(dir, "qrel.json"))[0]
+    return queries, qrels, qrels_binary
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_name', required=False, default="msmarco", type=str)
