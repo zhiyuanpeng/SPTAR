@@ -32,14 +32,13 @@ Then, run the following command in your `py37` env:
 ```
 pip uninstall nvidia_cublas_cu11
 ```
-We modified some original files of the installed packages, so, after setting up the `py37` env, replace the following classes or functions of `zhiyuan/retriever/dpr/train/train_sbert.py`:
+We modified package beirV1.0.1 and sentence-transformersV2.2.2, so, after setting up the `py37` env, install the two package locally:
 ```
-SentenceTransformer
-TrainRetriever
-TrainRetriever/InformationRetrievalEvaluator
+cd package/beir
+pip install -e .
+cd package/sentence-transformers
+pip install -e .
 ```
-with the corresponding files in `zhiyuan/packages/`
-
 
 ## Setup col37bert Env
 col37bert env is for ColBERT. Create col37bert env by:
