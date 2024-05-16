@@ -1,6 +1,6 @@
 import logging
 from typing import List, Dict, Union, Tuple
-
+from collections import defaultdict
 def mrr(qrels: Dict[str, Dict[str, int]], 
         results: Dict[str, Dict[str, float]], 
         k_values: List[int]) -> Tuple[Dict[str, float]]:
@@ -15,20 +15,21 @@ def mrr(qrels: Dict[str, Dict[str, int]],
     
     for query_id, doc_scores in results.items():
         top_hits[query_id] = sorted(doc_scores.items(), key=lambda item: item[1], reverse=True)[0:k_max]   
-    
+    mrr_per_q = defaultdict(dict)
     for query_id in top_hits:
         query_relevant_docs = set([doc_id for doc_id in qrels[query_id] if qrels[query_id][doc_id] > 0])    
         for k in k_values:
             for rank, hit in enumerate(top_hits[query_id][0:k]):
                 if hit[0] in query_relevant_docs:
                     MRR[f"MRR@{k}"] += 1.0 / (rank + 1)
+                    mrr_per_q[f"MRR@{k}"][query_id] = 1.0 / (rank + 1)
                     break
 
     for k in k_values:
         MRR[f"MRR@{k}"] = round(MRR[f"MRR@{k}"]/len(qrels), 5)
         logging.info("MRR@{}: {:.4f}".format(k, MRR[f"MRR@{k}"]))
 
-    return MRR
+    return MRR, mrr_per_q
 
 def recall_cap(qrels: Dict[str, Dict[str, int]], 
                results: Dict[str, Dict[str, float]], 

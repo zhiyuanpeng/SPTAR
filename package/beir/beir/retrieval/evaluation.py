@@ -6,7 +6,7 @@ from .search.dense import DenseRetrievalFaissSearch as DRFS
 from .search.lexical import BM25Search as BM25
 from .search.sparse import SparseSearch as SS
 from .custom_metrics import mrr, recall_cap, hole, top_k_accuracy
-
+from collections import defaultdict
 logger = logging.getLogger(__name__)
 
 class EvaluateRetrieval:
@@ -73,12 +73,17 @@ class EvaluateRetrieval:
         evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string})
         scores = evaluator.evaluate(results)
         
+        score_per_query = defaultdict(dict)
         for query_id in scores.keys():
             for k in k_values:
                 ndcg[f"NDCG@{k}"] += scores[query_id]["ndcg_cut_" + str(k)]
+                score_per_query[f"NDCG@{k}"][query_id] = scores[query_id]["ndcg_cut_" + str(k)]
                 _map[f"MAP@{k}"] += scores[query_id]["map_cut_" + str(k)]
+                score_per_query[f"MAP@{k}"][query_id] = scores[query_id]["map_cut_" + str(k)]
                 recall[f"Recall@{k}"] += scores[query_id]["recall_" + str(k)]
+                score_per_query[f"Recall@{k}"][query_id] = scores[query_id]["recall_" + str(k)]
                 precision[f"P@{k}"] += scores[query_id]["P_"+ str(k)]
+                score_per_query[f"P@{k}"][query_id] = scores[query_id]["P_"+ str(k)]
         
         for k in k_values:
             ndcg[f"NDCG@{k}"] = round(ndcg[f"NDCG@{k}"]/len(scores), 5)
@@ -86,12 +91,12 @@ class EvaluateRetrieval:
             recall[f"Recall@{k}"] = round(recall[f"Recall@{k}"]/len(scores), 5)
             precision[f"P@{k}"] = round(precision[f"P@{k}"]/len(scores), 5)
         
-        for eval in [ndcg, _map, recall, precision]:
-            logging.info("\n")
-            for k in eval.keys():
-                logging.info("{}: {:.4f}".format(k, eval[k]))
+        # for eval in [ndcg, _map, recall, precision]:
+        #     logging.info("\n")
+        #     for k in eval.keys():
+        #         logging.info("{}: {:.4f}".format(k, eval[k]))
 
-        return ndcg, _map, recall, precision
+        return ndcg, _map, recall, precision, score_per_query
     
     @staticmethod
     def evaluate_custom(qrels: Dict[str, Dict[str, int]], 
