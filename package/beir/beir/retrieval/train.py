@@ -67,7 +67,7 @@ class TrainRetriever:
         return train_dataloader
     
     def load_ir_evaluator(self, corpus: Dict[str, Dict[str, str]], queries: Dict[str, str], 
-                 qrels: Dict[str, Dict[str, int]], max_corpus_size: int = None, name: str = "eval", corpus_chunk_size: int = 1000, score_functions: List[Callable[[Tensor, Tensor], Tensor] ] = None) -> SentenceEvaluator:
+                 qrels: Dict[str, Dict[str, int]], max_corpus_size: int = None, name: str = "eval", corpus_chunk_size: int = 1000, score_functions: List[Callable[[Tensor, Tensor], Tensor] ] = None, return_recall: bool = False) -> SentenceEvaluator:
 
         if len(queries) <= 0:
             raise ValueError("Dev Set Empty!, Cannot evaluate on Dev set.")
@@ -105,7 +105,7 @@ class TrainRetriever:
             corpus = new_corpus
 
         logger.info("{} set contains {} documents and {} queries".format(name, len(corpus), len(queries)))
-        return InformationRetrievalEvaluator(queries, corpus, rel_docs, name=name, show_progress_bar=True, corpus_chunk_size=corpus_chunk_size, score_functions=score_functions)
+        return InformationRetrievalEvaluator(queries, corpus, rel_docs, name=name, show_progress_bar=True, corpus_chunk_size=corpus_chunk_size, score_functions=score_functions, return_recall=return_recall)
     
     def load_dummy_evaluator(self) -> SentenceEvaluator:
             return SequentialEvaluator([], main_score_function=lambda x: time.time())

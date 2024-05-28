@@ -9,15 +9,14 @@ def multirun(args):
         arg_dict[key] = vals
     for exp in arg_dict["exp_names"]:
         print(f"GPU {arg_dict['gpu_id']} Training: {arg_dict['dataset_name']} on {exp}")
-        # subprocess.call(['python', 'train.py', f'experiment=mtdnn-entity/s-m-listnet_eng_nn/{program}'])
-        if arg_dict["version"] == "v1":
-            train_command = ["python", "zhiyuan/retriever/dpr/train/train_sbert.py", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--weak_num", f"{arg_dict['weak_num']}", "--exp_name", exp]
-        elif arg_dict["version"] == "v2":
-            train_command = ["python", "zhiyuan/retriever/dpr/train/train_sbert_BM25_hardnegs.py", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--weak_num", f"{arg_dict['weak_num']}", "--exp_name", exp]
-        # for test
-        print(" ".join(train_command))
-        print(f"GPU {arg_dict['gpu_id']} Training: {arg_dict['dataset_name']} on {exp}")
-        subprocess.call(train_command)
+        # if arg_dict["version"] == "v1":
+        #     train_command = ["python", "zhiyuan/retriever/dpr/train/train_sbert.py", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--weak_num", f"{arg_dict['weak_num']}", "--exp_name", exp]
+        # elif arg_dict["version"] == "v2":
+        #     train_command = ["python", "zhiyuan/retriever/dpr/train/train_sbert_BM25_hardnegs.py", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--weak_num", f"{arg_dict['weak_num']}", "--exp_name", exp]
+        # # for test
+        # print(" ".join(train_command))
+        # print(f"GPU {arg_dict['gpu_id']} Training: {arg_dict['dataset_name']} on {exp}")
+        # subprocess.call(train_command)
         eval_command = ["python", "zhiyuan/retriever/dpr/eval/evaluate_sbert.py", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--exp_name", exp, "--dpr_v", arg_dict["version"]]
         # for test
         print(" ".join(eval_command))

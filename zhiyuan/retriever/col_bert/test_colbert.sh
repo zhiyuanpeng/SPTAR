@@ -79,62 +79,66 @@ else
     export test_split="test"
 fi
 
-OMP_NUM_THREADS=6 python -m zhiyuan.retriever.col_bert.colbert.data_prep \
-    --dataset ${dataset} \
-    --split ${test_split} \
-    --data_dir $raw_data_dir \
-    --collection $COLLECTION \
-    --queries $QUERIES \
+############################################################################
+# 1. prepare the test dataset #
+############################################################################ 
+# OMP_NUM_THREADS=6 python -m zhiyuan.retriever.col_bert.colbert.data_prep \
+#     --dataset ${dataset} \
+#     --split ${test_split} \
+#     --data_dir $raw_data_dir \
+#     --collection $COLLECTION \
+#     --queries $QUERIES \
 
 ############################################################################
 # 1. Indexing: Encode document (token) embeddings using ColBERT checkpoint #
 ############################################################################ 
 
-CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m torch.distributed.launch \
-    --nproc_per_node=4 -m zhiyuan.retriever.col_bert.colbert.index \
-    --root $OUTPUT_DIR \
-    --doc_maxlen 350 \
-    --mask-punctuation \
-    --bsize 128 \
-    --amp \
-    --checkpoint $CHECKPOINT \
-    --index_root $INDEX_ROOT \
-    --index_name $INDEX_NAME \
-    --collection $COLLECTION \
-    --experiment ${dataset}
+# CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m torch.distributed.launch \
+#     --nproc_per_node=8 -m zhiyuan.retriever.col_bert.colbert.index \
+#     --root $OUTPUT_DIR \
+#     --doc_maxlen 350 \
+#     --mask-punctuation \
+#     --bsize 1024 \
+#     --amp \
+#     --checkpoint $CHECKPOINT \
+#     --index_root $INDEX_ROOT \
+#     --index_name $INDEX_NAME \
+#     --collection $COLLECTION \
+#     --experiment ${dataset}\
+#     --similarity "l2"
 
 ###########################################################################################
 # 2. Faiss Indexing (End-to-End Retrieval): Store document (token) embeddings using Faiss #
 ########################################################################################### 
 
-CUDA_VISIBLE_DEVICES=${cudaNum} python -m zhiyuan.retriever.col_bert.colbert.index_faiss \
-    --index_root $INDEX_ROOT \
-    --index_name $INDEX_NAME \
-    --partitions $NUM_PARTITIONS \
-    --sample 0.3 \
-    --root $OUTPUT_DIR \
-    --experiment ${dataset}
+# CUDA_VISIBLE_DEVICES=${cudaNum} python -m zhiyuan.retriever.col_bert.colbert.index_faiss \
+#     --index_root $INDEX_ROOT \
+#     --index_name $INDEX_NAME \
+#     --partitions $NUM_PARTITIONS \
+#     --sample 0.3 \
+#     --root $OUTPUT_DIR \
+#     --experiment ${dataset}
     
 ####################################################################################
 # 3. Retrieval: retrieve relevant documents of queries from faiss index checkpoint #
 ####################################################################################
 
-CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m zhiyuan.retriever.col_bert.colbert.retrieve \
-    --amp \
-    --doc_maxlen 350 \
-    --mask-punctuation \
-    --bsize 256 \
-    --queries $QUERIES \
-    --nprobe 32 \
-    --partitions $NUM_PARTITIONS \
-    --faiss_depth 10 \
-    --depth 10 \
-    --index_root $INDEX_ROOT \
-    --index_name $INDEX_NAME \
-    --checkpoint $CHECKPOINT \
-    --root $OUTPUT_DIR \
-    --experiment ${dataset} \
-    --ranking_dir $RANKING_DIR
+# CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m zhiyuan.retriever.col_bert.colbert.retrieve \
+#     --amp \
+#     --doc_maxlen 350 \
+#     --mask-punctuation \
+#     --bsize 256 \
+#     --queries $QUERIES \
+#     --nprobe 32 \
+#     --partitions $NUM_PARTITIONS \
+#     --faiss_depth 10 \
+#     --depth 1000 \
+#     --index_root $INDEX_ROOT \
+#     --index_name $INDEX_NAME \
+#     --checkpoint $CHECKPOINT \
+#     --root $OUTPUT_DIR \
+#     --experiment ${dataset} \
+#     --ranking_dir $RANKING_DIR
 
 ######################################################################
 # 4. BEIR Evaluation: Evaluate Rankings with BEIR Evaluation Metrics #

@@ -28,13 +28,14 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
                  mrr_at_k: List[int] = [10],
                  ndcg_at_k: List[int] = [10],
                  accuracy_at_k: List[int] = [1, 3, 5, 10],
-                 precision_recall_at_k: List[int] = [1, 3, 5, 10],
-                 map_at_k: List[int] = [100],
+                 precision_recall_at_k: List[int] = [1, 3, 5, 10, 100],
+                 map_at_k: List[int] = [1000],
                  show_progress_bar: bool = False,
                  batch_size: int = 32,
                  name: str = '',
                  write_csv: bool = True,
                  score_functions: List[Callable[[Tensor, Tensor], Tensor] ] = {'cos_sim': cos_sim, 'dot_score': dot_score},       #Score function, higher=more similar
+                 return_recall: bool = False,
                  main_score_function: str = None
                  ):
 
@@ -61,6 +62,7 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
         self.name = name
         self.write_csv = write_csv
         self.score_functions = score_functions
+        self.return_recall = return_recall
         self.score_function_names = sorted(list(self.score_functions.keys()))
         self.main_score_function = main_score_function
 
@@ -129,9 +131,9 @@ class InformationRetrievalEvaluator(SentenceEvaluator):
             fOut.write(",".join(map(str, output_data)))
             fOut.write("\n")
             fOut.close()
-
+        logger.info(f"Return Recall: {self.return_recall}")
         if self.main_score_function is None:
-            return max([scores[name]['map@k'][max(self.map_at_k)] for name in self.score_function_names])
+            return max([scores[name]['map@k'][max(self.map_at_k)] for name in self.score_function_names]) if not self.return_recall else max([scores[name]['recall@k'][max(self.precision_recall_at_k)] for name in self.score_function_names])
         else:
             return scores[self.main_score_function]['map@k'][max(self.map_at_k)]
 

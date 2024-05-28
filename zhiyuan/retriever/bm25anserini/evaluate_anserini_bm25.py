@@ -18,17 +18,20 @@ Usage: python evaluate_anserini_bm25.py
 from beir import util, LoggingHandler
 from beir.datasets.data_loader import GenericDataLoader
 from beir.retrieval.evaluation import EvaluateRetrieval
-from zhiyuan.data_process import load_dl
 import pathlib, os, json
 import logging
 import requests
 import random
-
+import sys
 from os.path import join
 import argparse
 
 ####
 cwd = os.getcwd()
+if join(cwd, "zhiyuan") not in sys.path:
+    sys.path.append(join(cwd, "zhiyuan"))
+    sys.path.append(join(cwd, "xuyang"))
+from zhiyuan.data_process import load_dl
 data_dir = join(cwd, "zhiyuan", "datasets")
 raw_dir = join(data_dir, "raw")
 weak_dir = join(data_dir, "weak")
@@ -39,6 +42,7 @@ xuyang_dir = join(cwd, "xuyang", "data")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset_name', required=False, default="msmarco", type=str)
+parser.add_argument('--skip_convert', action='store_true')
 parser.add_argument('--skip_index', action='store_true')
 parser.add_argument('--skip_retrieval', action='store_true')
 args = parser.parse_args()
@@ -80,7 +84,7 @@ if args.dataset_name == "msmarco" or args.dataset_name == "dl2019" or args.datas
     index_name = f"beir/msmarco" # beir/scifact
 else:
     index_name = f"beir/{args.dataset_name}"
-if not args.skip_index:
+if not args.skip_convert:
     #### Convert BEIR corpus to Pyserini Format #####
     pyserini_jsonl = "pyserini.jsonl"
     with open(os.path.join(model_save_path, pyserini_jsonl), 'w', encoding="utf-8") as fOut:
@@ -89,14 +93,15 @@ if not args.skip_index:
             data = {"id": doc_id, "title": title, "contents": text}
             json.dump(data, fOut)
             fOut.write('\n')
-    #### Upload Multipart-encoded files ####
+if not args.skip_index:
+     #### Upload Multipart-encoded files ####
     with open(os.path.join(model_save_path, "pyserini.jsonl"), "rb") as fIn:
         r = requests.post(docker_beir_pyserini + "/upload/", files={"file": fIn}, verify=False)
     #### Index documents to Pyserini #####
     r = requests.get(docker_beir_pyserini + "/index/", params={"index_name": index_name})
 if not args.skip_retrieval:
     #### Retrieve documents from Pyserini #####
-    retriever = EvaluateRetrieval(k_values=[1,3,5,10, 1000])
+    retriever = EvaluateRetrieval(k_values=[1,3,5,10, 100, 300, 500, 1000])
     qids = list(queries)
     query_texts = [queries[qid] for qid in qids]
     payload = {"queries": query_texts, "qids": qids, "k": max(retriever.k_values)}
@@ -115,24 +120,21 @@ if not args.skip_retrieval:
 
     #### Evaluate your retrieval using NDCG@k, MAP@K ...
     logging.info("Retriever evaluation for k in: {}".format(retriever.k_values))
-    ndcg, map, recall, _ = retriever.evaluate(qrels, results, retriever.k_values)
+    ndcg, map, recall, _, score_per_query= retriever.evaluate(qrels, results, retriever.k_values)
     if args.dataset_name == "dl2019" or args.dataset_name == "dl2020":
-        _, map, recall, _ = retriever.evaluate(qrels_binary, results, retriever.k_values)
+        _, map, recall, _, score_per_query_override = retriever.evaluate(qrels_binary, results, retriever.k_values)
+        for key in score_per_query.keys():
+            if "MAP" in key:
+                score_per_query[key] = score_per_query_override[key]
+            if "Recall" in key:
+                score_per_query[key] = score_per_query_override[key]
     else:
-        mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
-        for eval in [mrr]:
-            logging.info("\n")
-            for k in eval.keys():
-                logging.info("{}: {:.4f}".format(k, eval[k]))
+        mrr, mrr_score = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
+        for key in mrr_score.keys():
+            score_per_query[key] = mrr_score[key]
     for eval in [ndcg, map, recall]:
             logging.info("\n")
             for k in eval.keys():
                 logging.info("{}: {:.4f}".format(k, eval[k]))
-    #### Retrieval Example ####
-    # query_id, scores_dict = random.choice(list(results.items()))
-    # logging.info("Query : %s\n" % queries[query_id])
-
-    # scores = sorted(scores_dict.items(), key=lambda item: item[1], reverse=True)
-    # for rank in range(10):
-    #     doc_id = scores[rank][0]
-    #     logging.info("Doc %d: %s [%s] - %s\n" % (rank+1, doc_id, corpus[doc_id].get("title"), corpus[doc_id].get("text")))
+    with open(join(model_save_path, f"{args.dataset_name}.json"), "w") as f:
+        json.dump(score_per_query, f)

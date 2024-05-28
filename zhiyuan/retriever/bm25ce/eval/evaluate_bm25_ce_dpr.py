@@ -35,9 +35,10 @@ import argparse
 import sys
 ####
 cwd = os.getcwd()
-# zhiyuan_dir = join(cwd, "zhiyuan")
-# if zhiyuan_dir not in sys.path:
-#     sys.path.append(zhiyuan_dir)
+zhiyuan_dir = join(cwd, "zhiyuan")
+if zhiyuan_dir not in sys.path:
+    sys.path.append(zhiyuan_dir)
+from data_process import load_dl, merge_queries, extract_results
 from DenseRetrievalExactSearchBM25 import DenseRetrievalExactSearchBM25 as DRES
 data_dir = join(cwd, "zhiyuan", "datasets")
 raw_dir = join(data_dir, "raw")
@@ -53,7 +54,7 @@ parser.add_argument('--dataset_name', required=False, default="fiqa", type=str)
 parser.add_argument('--train_num', required=False, default=50, type=int)
 parser.add_argument('--dpr_v', required=False, default="v1", choices=["v1", "v2"], type=str)
 parser.add_argument('--exp_name', required=False, default="no_aug", type=str)
-parser.add_argument('--topk', required=False, default=100, type=int)
+parser.add_argument('--topk', required=False, default=1000, type=int)
 args = parser.parse_args()
 #### Provide model save path
 model_name = "bert-base-uncased" 
@@ -68,38 +69,30 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 
 model_save_path = os.path.join(dpr_dir, "train", "output", args.exp_name, str(args.train_num), "{}-{}-{}".format(model_name, args.dpr_v, args.dataset_name))
 
-#### Provide the data path where scifact has been downloaded and unzipped to the data loader
-# data folder would contain these files: 
-# (1) scifact/corpus.jsonl  (format: jsonlines)
-# (2) scifact/queries.jsonl (format: jsonlines)
-# (3) scifact/qrels/test.tsv (format: tsv ("\t"))
-
-# corpus, queries, qrels = GenericDataLoader(corpus_file=join(beir_dir, args.dataset_name, "corpus.jsonl"), query_file=join(beir_dir, args.dataset_name, "queries.jsonl"), qrels_file=join(beir_dir, args.dataset_name, "qrels", "test.tsv")).load_custom()
 if args.dataset_name == "msmarco":
     corpus, queries, qrels = GenericDataLoader(join(beir_dir, args.dataset_name)).load(split="dev")
+    queries_19, qrels_19, qrels_binary_19 = load_dl(join(beir_dir, "TREC_DL_2019"))
+    queries_20, qrels_20, qrels_binary_20 = load_dl(join(beir_dir, "TREC_DL_2020"))
 else:
     corpus, queries, qrels = GenericDataLoader(join(beir_dir, args.dataset_name)).load(split="test")
-
 ##################################################
 #### (1) RETRIEVE Top-100 docs using BM25 Pyserini
 ##################################################
 port_dict = {"msmarco": 8000, "fiqa": 8002}
 docker_beir_pyserini = f"http://127.0.0.1:{port_dict[args.dataset_name]}"
-
-retriever = EvaluateRetrieval(k_values=[1,3,5,10], score_function="cos_sim")
+if args.dataset_name == "msmarco":
+    queries = merge_queries(queries, queries_19, queries_20)
 qids = list(queries)
 query_texts = [queries[qid] for qid in qids]
-payload = {"queries": query_texts, "qids": qids, "k": args.topk}
-
+payload = {"queries": query_texts, "qids": qids, "k": 1000}
 #### Retrieve pyserini results (format of results is identical to qrels)
 results = json.loads(requests.post(docker_beir_pyserini + "/lexical/batch_search/", json=payload).text)["results"]
-
 #### Check if query_id is in results i.e. remove it from docs incase if it appears ####
 #### Quite Important for ArguAna and Quora ####
-for query_id in results:
-    if query_id in results[query_id]:
-        results[query_id].pop(query_id, None)
-# manually extract top 100
+# for query_id in results:
+#     if query_id in results[query_id]:
+#         results[query_id].pop(query_id, None)
+# # manually extract top 100
 results_topk = {}
 for q_id, topk_doc_ids in results.items():
     topk_doc_ids = [(ss, ii) for ii, ss in topk_doc_ids.items()]
@@ -112,34 +105,41 @@ for q_id, topk_doc_ids in results.items():
 #### (2) RERANK Top-100 docs using Cross-Encoder
 ################################################
 trained_model = models.SentenceBERT(model_save_path)
-model = DRES(trained_model, batch_size=256, corpus_chunk_size=args.topk)
+model = DRES(trained_model, batch_size=256)
 
 #### Retrieve dense results (format of results is identical to qrels)
 start_time = time()
-rerank_results = model.search(corpus, queries, results_topk, 10, score_function="cos_sim", return_sorted=True)
+results = model.search(corpus, queries, results_topk, args.topk, score_function="cos_sim", return_sorted=True)
 end_time = time()
 print("Time taken to retrieve: {:.2f} seconds".format(end_time - start_time))
 
-#### Evaluate your retrieval using NDCG@k, MAP@K ...
-ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, [1,3,5,10])
+tobe_eval = {}
+if args.dataset_name == "msmarco":
+    results, results_19, results_20 = extract_results(results)
+    tobe_eval["dl2019"] = (qrels_19, results_19, qrels_binary_19)
+    tobe_eval["dl2020"] = (qrels_20, results_20, qrels_binary_20)
+tobe_eval[args.dataset_name] = (qrels, results, "pad")
 
-mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
-recall_cap = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="r_cap")
-hole = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="hole")
+retriever = EvaluateRetrieval(k_values=[1,3,5,10,100,300, 500, 1000], score_function="cos_sim")
 
-for eval in [mrr, recall_cap, hole]:
-    logging.info("\n")
-    for k in eval.keys():
-        logging.info("{}: {:.4f}".format(k, eval[k]))
-
-#### Print top-k documents retrieved ####
-# top_k = 10
-
-# query_id, ranking_scores = random.choice(list(rerank_results.items()))
-# scores_sorted = sorted(ranking_scores.items(), key=lambda item: item[1], reverse=True)
-# logging.info("Query : %s\n" % queries[query_id])
-
-# for rank in range(top_k):
-#     doc_id = scores_sorted[rank][0]
-#     # Format: Rank x: ID [Title] Body
-#     logging.info("Rank %d: %s [%s] - %s\n" % (rank+1, doc_id, corpus[doc_id].get("title"), corpus[doc_id].get("text")))
+for dataset_name in tobe_eval.keys():
+    qrels, results, qrels_binary = tobe_eval[dataset_name]
+    logging.info("Retriever evaluation for dataset {}".format(dataset_name))
+    ndcg, map, recall, _, score_per_query= retriever.evaluate(qrels, results, retriever.k_values)
+    if dataset_name == "dl2019" or dataset_name == "dl2020":
+        _, map, recall, _, score_per_query_override = retriever.evaluate(qrels_binary, results, retriever.k_values)
+        for key in score_per_query.keys():
+            if "MAP" in key:
+                score_per_query[key] = score_per_query_override[key]
+            if "Recall" in key:
+                score_per_query[key] = score_per_query_override[key]
+    else:
+        mrr, mrr_score = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
+        for key in mrr_score.keys():
+            score_per_query[key] = mrr_score[key]
+    for eval in [ndcg, map, recall]:
+            logging.info("\n")
+            for k in eval.keys():
+                logging.info("{}: {:.4f}".format(k, eval[k]))
+    with open(join(log_path, f"{dataset_name}.json"), "w") as f:
+        json.dump(score_per_query, f)

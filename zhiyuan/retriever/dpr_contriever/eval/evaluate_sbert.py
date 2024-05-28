@@ -32,7 +32,7 @@ parser.add_argument('--dpr_v', required=False, default="v1", choices=["v1", "v2"
 parser.add_argument('--exp_name', required=False, default="no_aug", type=str)
 args = parser.parse_args()
 #### Provide model save path
-model_name = "bert-base-uncased" 
+model_name = "facebook/contriever"
 model_save_path = os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "train", "output", args.exp_name, str(args.train_num), "{}-{}-{}".format(model_name, args.dpr_v, args.dataset_name))
 os.makedirs(model_save_path, exist_ok=True)
 #### Just some code to print debug information to stdout

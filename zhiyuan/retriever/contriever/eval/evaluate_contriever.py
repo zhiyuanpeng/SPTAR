@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*-coding:utf-8 -*-
+'''
+@File    :   evaluate_tasb.py
+@Time    :   2024/05/25 01:21:07
+@Author  :   Zhiyuan Peng@Santa Clara University
+@Version :   1.0
+@Desc    :   copy from dpr/eval/evaluate_dpr.py, only change the model name to tas-b following:
+https://github.com/beir-cellar/beir?tab=readme-ov-file#beers-quick-example
+'''
+
 from time import time
 from beir import util, LoggingHandler
 from beir.retrieval import models
@@ -32,7 +43,7 @@ parser.add_argument('--dpr_v', required=False, default="v1", choices=["v1", "v2"
 parser.add_argument('--exp_name', required=False, default="no_aug", type=str)
 args = parser.parse_args()
 #### Provide model save path
-model_name = "bert-base-uncased" 
+model_name = "facebook/contriever" 
 model_save_path = os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "train", "output", args.exp_name, str(args.train_num), "{}-{}-{}".format(model_name, args.dpr_v, args.dataset_name))
 os.makedirs(model_save_path, exist_ok=True)
 #### Just some code to print debug information to stdout
@@ -42,7 +53,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
                     level=logging.INFO,
                     handlers=[handler])
 
-model = DRES(models.SentenceBERT(model_save_path), batch_size=256, corpus_chunk_size=100000)
+model = DRES(models.SentenceBERT(model_name), batch_size=256, corpus_chunk_size=100000)
 retriever = EvaluateRetrieval(model, k_values=[1,3,5,10,100,300,500,1000], score_function="cos_sim")
 
 if args.dataset_name == "msmarco":

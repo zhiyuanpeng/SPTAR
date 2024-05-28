@@ -246,6 +246,10 @@ def extract_results(ms_results):
             results_19[qid[6:]] = res
         elif "tr20ec" in qid:
             results_20[qid[6:]] = res
+        elif "trec2019" in qid:
+            results_19[qid[8:]] = res
+        elif "trec2020" in qid:
+            results_20[qid[8:]] = res
         else:
             results[qid] = res
     return results, results_19, results_20
