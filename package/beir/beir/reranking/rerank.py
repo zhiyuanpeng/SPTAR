@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, List
-
+from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 #Parent class for any reranking model
@@ -19,7 +19,7 @@ class Rerank:
         
         sentence_pairs, pair_ids = [], []
         
-        for query_id in results:
+        for query_id in tqdm(results):
             if len(results[query_id]) > top_k:
                 for (doc_id, _) in sorted(results[query_id].items(), key=lambda item: item[1], reverse=True)[:top_k]:
                     pair_ids.append([query_id, doc_id])

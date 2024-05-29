@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import os
 import csv
-
+from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 class CERerankingEvaluator:
@@ -42,7 +42,7 @@ class CERerankingEvaluator:
         num_queries = 0
         num_positives = []
         num_negatives = []
-        for instance in self.samples:
+        for instance in tqdm(self.samples):
             query = instance['query']
             positive = list(instance['positive'])
             negative = list(instance['negative'])
