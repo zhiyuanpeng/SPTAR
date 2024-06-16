@@ -23,7 +23,7 @@ def multirun(args):
         # for test
         print(" ".join(train_command))
         print(f"GPU {arg_dict['gpu_id']} Training: {arg_dict['dataset_name']} on {exp}")
-        # subprocess.call(train_command)
+        subprocess.call(train_command)
         eval_command = ["python", "-m", "zhiyuan.retriever.bm25ce.eval.evaluate_bm25ce", "--dataset_name", f"{arg_dict['dataset_name']}", "--train_num", f"{arg_dict['train_num']}", "--exp_name", exp, "--dpr_v", arg_dict["version"]]
         # for test
         print(" ".join(eval_command))

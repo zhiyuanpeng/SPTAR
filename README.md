@@ -32,6 +32,15 @@ Then, run the following command in your `py37` env:
 ```
 pip uninstall nvidia_cublas_cu11
 ```
+If you find this error:
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/opt/conda/envs/tasb/lib/python3.8/site-packages/torch/utils/cpp_extension.py", line 25, in <module>
+    from pkg_resources import packaging  # type: ignore[attr-defined]
+ImportError: cannot import name 'packaging' from 'pkg_resources' (/opt/conda/envs/tasb/lib/python3.8/site-packages/pkg_resources/__init__.py)
+```
+Then, downgrad your `setuptools` to `setuptools=69.5.1` in your env.
 We modified package beirV1.0.1 and sentence-transformersV2.2.2, so, after setting up the `py37` env, install the two package locally:
 ```
 cd package/beir
