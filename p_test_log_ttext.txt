@@ -1,0 +1,168 @@
+Start to compare DPR on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 7.10643554091885e-24
+p_fiqa with metric Recall@100, sptar vs w/o aug: 2.4870275444226694e-34
+Start to compare DPR on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.10043537563967762                                ****
+p_fiqa with metric Recall@100, sptar vs inpars: 8.251536675548805e-05
+Start to compare DPR on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 6.743044786370676e-119
+p_msmarco with metric Recall@100, sptar vs w/o aug: 2.608020439591533e-239
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 1.3668277904813877e-06
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 8.272866495593428e-05
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 3.01592273371219e-05
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 1.5954177885892956e-05
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 7.502318166106444e-05
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 8.65299109608771e-06
+Start to compare DPR on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 2.734577442627707e-70
+p_msmarco with metric Recall@100, sptar vs inpars: 1.0010670631516897e-91
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.004736864130982038
+p_dl2020 with metric MAP@1000, sptar vs inpars: 0.0017797634847201483
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.0009917036756035276
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.000551040983179495
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.00442080725921856
+p_dl2020 with metric NDCG@10, sptar vs inpars: 1.50377355263548e-05
+Start to compare ColBERT on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 9.162279844691724e-32
+p_fiqa with metric Recall@100, sptar vs w/o aug: 5.6314034952616377e-14
+Start to compare ColBERT on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.00014136915627382387
+p_fiqa with metric Recall@100, sptar vs inpars: 0.004262766426443455
+Start to compare ColBERT on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 6.191621230608e-311
+p_msmarco with metric Recall@100, sptar vs w/o aug: 2.6585125905447366e-254
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 7.254324724406698e-05
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 5.6586696847315e-07
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 5.561094178794979e-08
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 2.989643070639241e-07
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 1.1899821222699003e-07
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 6.013523440000268e-12
+Start to compare ColBERT on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 0.07952074404246794                             ****
+p_msmarco with metric Recall@100, sptar vs inpars: 0.06687155422166167                         ****
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.4505808887876532                             ****
+p_dl2020 with metric MAP@1000, sptar vs inpars: 0.33889283802540265                            ****
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.6626658812578473                           ****
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.4085781144077845                           ****
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.332512691978307                               ****
+p_dl2020 with metric NDCG@10, sptar vs inpars: 0.3160785844877007                              ****
+Start to compare BM25DPR on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 8.2903015160185975e-22
+p_fiqa with metric Recall@100, sptar vs w/o aug: 1.585155860170808e-21
+Start to compare BM25DPR on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.19216670047347945                                ****
+p_fiqa with metric Recall@100, sptar vs inpars: 0.00018402872444072183
+Start to compare BM25DPR on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 6.836332737350076e-95
+p_msmarco with metric Recall@100, sptar vs w/o aug: 2.505863833946898e-98
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 3.687997469173596e-05
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 0.0026706127385644957
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 0.00014829472664778864
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 0.009528504120074431
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 0.0001617847589954412
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 0.00014900779350598126
+Start to compare BM25DPR on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 3.797774873138965e-53
+p_msmarco with metric Recall@100, sptar vs inpars: 9.113147865573689e-28
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.007417255971132389
+p_dl2020 with metric MAP@1000, sptar vs inpars: 0.015623897628402035
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.03624984419103898
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.045929849515539425
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.007958152880158813
+p_dl2020 with metric NDCG@10, sptar vs inpars: 7.427487838460493e-05
+Start to compare BM25CE on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 1.3909473158234413e-19
+p_fiqa with metric Recall@100, sptar vs w/o aug: 0.035388898680270904
+Start to compare BM25CE on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.27623595390923916                                ****
+p_fiqa with metric Recall@100, sptar vs inpars: 0.30253824782216754                            ****
+Start to compare BM25CE on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 1.5475198628607615e-203
+p_msmarco with metric Recall@100, sptar vs w/o aug: 2.318165264157238e-195
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 9.837914664391385e-08
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 7.23963773290409e-08
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 8.022855655627153e-06
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 1.615828898591012e-05
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 4.5523026960138665e-08
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 5.594494305420903e-09
+Start to compare BM25CE on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 0.0006570590441327869
+p_msmarco with metric Recall@100, sptar vs inpars: 5.852678574147366e-133
+p_dl2019 with metric MAP@1000, sptar vs inpars: 1.0916117842185959e-09
+p_dl2020 with metric MAP@1000, sptar vs inpars: 1.1654741202716293e-08
+p_dl2019 with metric Recall@100, sptar vs inpars: 3.3559657491533065e-06
+p_dl2020 with metric Recall@100, sptar vs inpars: 3.5949903896347454e-06
+p_dl2019 with metric NDCG@10, sptar vs inpars: 1.5411172192521346e-10
+p_dl2020 with metric NDCG@10, sptar vs inpars: 7.661954973613486e-13
+Start to compare Contriever on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 4.29425158653579e-12
+p_fiqa with metric Recall@100, sptar vs w/o aug: 3.371336564384147e-08
+Start to compare Contriever on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.0031634807394745504
+p_fiqa with metric Recall@100, sptar vs inpars: 8.674279567720719e-05
+Start to compare Contriever on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 1.0017196032856716e-29
+p_msmarco with metric Recall@100, sptar vs w/o aug: 1.6839749380499387e-39
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 0.00015888631423352032
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 0.0007108153601492193
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 0.009787540229347602
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 0.008981647339156039
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 0.004867694338599966
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 0.0013618852219616485
+Start to compare Contriever on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 4.3611467066336363e-44
+p_msmarco with metric Recall@100, sptar vs inpars: 4.3463632583466095e-31
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.0007005654709014742
+p_dl2020 with metric MAP@1000, sptar vs inpars: 2.6468868080398727e-05
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.0031763205626530885
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.006135438780304424
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.027255273264767864
+p_dl2020 with metric NDCG@10, sptar vs inpars: 0.00015056634253436858
+Start to compare ReContriever on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 0.0021263548249611177
+p_fiqa with metric Recall@100, sptar vs w/o aug: 7.365546041891436e-07
+Start to compare ReContriever on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.027164900339403584
+p_fiqa with metric Recall@100, sptar vs inpars: 0.011552980953717604
+Start to compare ReContriever on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 1.4706742876754345e-17
+p_msmarco with metric Recall@100, sptar vs w/o aug: 4.428595602348116e-18
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 0.002486283063263422
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 0.0011365820478219486
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 0.015020061208042385
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 0.009211639386909429
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 0.01228474641581583
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 0.0050912155411636205
+Start to compare ReContriever on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 1.3060764365336155e-47
+p_msmarco with metric Recall@100, sptar vs inpars: 1.4936394792687973e-16
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.0013683852361679875
+p_dl2020 with metric MAP@1000, sptar vs inpars: 0.0006189549017442723
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.11989254610897238                          ****
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.037403296493611855
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.0027592910464018365
+p_dl2020 with metric NDCG@10, sptar vs inpars: 2.2458596884241337e-05
+Start to compare tas-b on fiqa with sptar vs w/o aug
+p_fiqa with metric MRR@10, sptar vs w/o aug: 9.66097537593719e-22
+p_fiqa with metric Recall@100, sptar vs w/o aug: 1.8675304002841498e-30
+Start to compare tas-b on fiqa with sptar vs inpars
+p_fiqa with metric MRR@10, sptar vs inpars: 0.000287491342590517
+p_fiqa with metric Recall@100, sptar vs inpars: 9.782600387613901e-05
+Start to compare tas-b on msmarco with sptar vs w/o aug
+p_msmarco with metric MRR@10, sptar vs w/o aug: 0.0
+p_msmarco with metric Recall@100, sptar vs w/o aug: 0.0
+p_dl2019 with metric MAP@1000, sptar vs w/o aug: 8.632240729260848e-10
+p_dl2020 with metric MAP@1000, sptar vs w/o aug: 3.6087832234298352e-12
+p_dl2019 with metric Recall@100, sptar vs w/o aug: 5.300740938769515e-12
+p_dl2020 with metric Recall@100, sptar vs w/o aug: 1.479144540905771e-17
+p_dl2019 with metric NDCG@10, sptar vs w/o aug: 4.4122736581582383e-16
+p_dl2020 with metric NDCG@10, sptar vs w/o aug: 5.637082198047528e-17
+Start to compare tas-b on msmarco with sptar vs inpars
+p_msmarco with metric MRR@10, sptar vs inpars: 8.236610292825383e-43
+p_msmarco with metric Recall@100, sptar vs inpars: 1.3021233949799164e-25
+p_dl2019 with metric MAP@1000, sptar vs inpars: 0.1514312080846978                             ****
+p_dl2020 with metric MAP@1000, sptar vs inpars: 0.010223917725661384
+p_dl2019 with metric Recall@100, sptar vs inpars: 0.14678021904764002                          ****
+p_dl2020 with metric Recall@100, sptar vs inpars: 0.005042223960958027
+p_dl2019 with metric NDCG@10, sptar vs inpars: 0.02093861657424126
+p_dl2020 with metric NDCG@10, sptar vs inpars: 0.0031571193698484235

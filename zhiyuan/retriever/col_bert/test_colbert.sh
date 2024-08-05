@@ -79,29 +79,33 @@ else
     export test_split="test"
 fi
 
-OMP_NUM_THREADS=6 python -m zhiyuan.retriever.col_bert.colbert.data_prep \
-    --dataset ${dataset} \
-    --split ${test_split} \
-    --data_dir $raw_data_dir \
-    --collection $COLLECTION \
-    --queries $QUERIES \
+############################################################################
+# 1. prepare the test dataset #
+############################################################################ 
+# OMP_NUM_THREADS=6 python -m zhiyuan.retriever.col_bert.colbert.data_prep \
+#     --dataset ${dataset} \
+#     --split ${test_split} \
+#     --data_dir $raw_data_dir \
+#     --collection $COLLECTION \
+#     --queries $QUERIES \
 
 ############################################################################
 # 1. Indexing: Encode document (token) embeddings using ColBERT checkpoint #
 ############################################################################ 
 
 CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m torch.distributed.launch \
-    --nproc_per_node=4 -m zhiyuan.retriever.col_bert.colbert.index \
+    --nproc_per_node=8 -m zhiyuan.retriever.col_bert.colbert.index \
     --root $OUTPUT_DIR \
     --doc_maxlen 350 \
     --mask-punctuation \
-    --bsize 128 \
+    --bsize 1024 \
     --amp \
     --checkpoint $CHECKPOINT \
     --index_root $INDEX_ROOT \
     --index_name $INDEX_NAME \
     --collection $COLLECTION \
-    --experiment ${dataset}
+    --experiment ${dataset}\
+    --similarity "l2"
 
 ###########################################################################################
 # 2. Faiss Indexing (End-to-End Retrieval): Store document (token) embeddings using Faiss #
@@ -128,7 +132,7 @@ CUDA_VISIBLE_DEVICES=${cudaNum} OMP_NUM_THREADS=30 python -m zhiyuan.retriever.c
     --nprobe 32 \
     --partitions $NUM_PARTITIONS \
     --faiss_depth 10 \
-    --depth 10 \
+    --depth 1000 \
     --index_root $INDEX_ROOT \
     --index_name $INDEX_NAME \
     --checkpoint $CHECKPOINT \

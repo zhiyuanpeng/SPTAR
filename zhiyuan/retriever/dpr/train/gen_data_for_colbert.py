@@ -141,6 +141,9 @@ with open(dev_qrels_path, 'w') as fIn:
     for id, row in enumerate(reader):
         query_id, corpus_id, score = row[0], row[1], int(row[2])
         writer.writerow([query_id, 0, corpus_id, 1])
+
+# add the test data, for colbert, dev is not used as there is no evaluation during the training, for fiqa, load the original test q and corpus to colbert folder. For mamarco, load the original, process the original corpus to colbert format. manually add trec2019 before trec dl 2019 queries and add trec2020 before trec dl 2020 queries. append trec dl 2019 200 test queries and trec dl 2020 200 test queries to msmarco dev queries as test queries. For both fiqa and msmarco, original test qrels will be loaded for evalution.
+
     
     
 

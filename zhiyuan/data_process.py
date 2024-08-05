@@ -211,6 +211,49 @@ def sample_corpus_v2(dataset_name, ratio: int = 20, train_num: int = 50, weak_nu
             json.dump(reduce_doc, f)
             f.write("\n")
 
+def load_dl(dir):
+    """
+    load dl2019 dl2020 queries and qrels
+    """
+    queries = {}
+    year = dir.split("_")[-1]
+    with open(join(dir, f"queries_{year}", "raw.tsv")) as f:
+        for line in f:
+            qid, query = line.strip().split("\t")
+            queries[qid] = query
+    qrels_binary = read_json(join(dir, "qrel_binary.json"))[0]
+    qrels = read_json(join(dir, "qrel.json"))[0]
+    return queries, qrels, qrels_binary
+
+def merge_queries(queries, queries_19, queries_20):
+    """
+    merge ms's queries with the queries of DL2019 and DL2020 for quick retrieval
+    """
+    ms_queries = copy.deepcopy(queries)
+    for qid, query in queries_19.items():
+        ms_queries["tr19ec"+qid] = query
+    for qid, query in queries_20.items():
+        ms_queries["tr20ec"+qid] = query
+    return ms_queries
+
+def extract_results(ms_results):
+    """
+    extract the results of MS, DL2019 and DL2020 
+    """
+    results, results_19, results_20 = {}, {}, {}
+    for qid, res in ms_results.items():
+        if "tr19ec" in qid:
+            results_19[qid[6:]] = res
+        elif "tr20ec" in qid:
+            results_20[qid[6:]] = res
+        elif "trec2019" in qid:
+            results_19[qid[8:]] = res
+        elif "trec2020" in qid:
+            results_20[qid[8:]] = res
+        else:
+            results[qid] = res
+    return results, results_19, results_20
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_name', required=False, default="msmarco", type=str)

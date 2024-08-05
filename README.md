@@ -32,14 +32,22 @@ Then, run the following command in your `py37` env:
 ```
 pip uninstall nvidia_cublas_cu11
 ```
-We modified some original files of the installed packages, so, after setting up the `py37` env, replace the following classes or functions of `zhiyuan/retriever/dpr/train/train_sbert.py`:
+If you find this error:
 ```
-SentenceTransformer
-TrainRetriever
-TrainRetriever/InformationRetrievalEvaluator
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/opt/conda/envs/tasb/lib/python3.8/site-packages/torch/utils/cpp_extension.py", line 25, in <module>
+    from pkg_resources import packaging  # type: ignore[attr-defined]
+ImportError: cannot import name 'packaging' from 'pkg_resources' (/opt/conda/envs/tasb/lib/python3.8/site-packages/pkg_resources/__init__.py)
 ```
-with the corresponding files in `zhiyuan/packages/`
-
+Then, downgrad your `setuptools` to `setuptools=69.5.1` in your env.
+We modified package beirV1.0.1 and sentence-transformersV2.2.2, so, after setting up the `py37` env, install the two package locally:
+```
+cd package/beir
+pip install -e .
+cd package/sentence-transformers
+pip install -e .
+```
 
 ## Setup col37bert Env
 col37bert env is for ColBERT. Create col37bert env by:
@@ -81,10 +89,10 @@ python zhiyuan/retriever/bm25anserini/evaluate_anserini_bm25.py --dataset_name m
 #### DPR
 ```
 # fiqa
-python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps no_aug
+python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps no_aug --weak_num 100k
 
 # msmarco
-python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps no_aug
+python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps no_aug --weak_num 100k
 ```
 Testing results are logged in `zhiyuan/retriever/dpr/train/output/no_aug/`
 #### ColBERT
@@ -111,12 +119,12 @@ Testing results of ColBERT are documented in `$LOG_DIR/test_log.txt` where `LOG_
 # fiqa
 docker pull beir/pyserini-fastapi 
 docker run -p 8002:8000 -it --name fiqa --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name no_aug --topk 10
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name no_aug --topk 1000
 
 # msmarco
 docker pull beir/pyserini-fastapi 
 docker run -p 8000:8000 -it --name msmarco --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name no_aug --topk 10
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name no_aug --topk 1000
 ```
 Testing results are logged in `zhiyuan/retriever/bm25ce/eval/output/no_aug`
 
@@ -125,16 +133,16 @@ Testing results are logged in `zhiyuan/retriever/bm25ce/eval/output/no_aug`
 #### DPR
 ```
 # fiqa
-python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps p_written_100k_vicuna_prompt_2_filtered_70
+python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps p_written_100k_vicuna_prompt_2_filtered_70 --weak_num 100k
 
 # msmarco
-python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps p_written_100k_vicuna_prompt_3_filtered_30
+python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps p_written_100k_vicuna_prompt_3_filtered_30 --weak_num 100k
 ```
 #### ColBERT
 ```
 # fiqa
-## gen ColBERT data (You need to run this command in py37 env)
-python zhiyuan/retriever/dpr/train/gen_data_for_colbert.py --dataset_name fiqa --exp_name p_written_100k_vicuna_prompt_2_filtered_70
+## gen ColBERT training data by load the same training data as DPR. Because, ColBERT using training triples, for each query, sample 2 times negative documents as that of positive documents. (You need to run this command in py37 env). For test queirs and corpus, run the first data_process.py run by test_colbert.sh generates the testing queries and corpus by call beir dataloader.
+python zhiyuan/retriever/dpr/train/gen_data_for_colbert.py --dataset_name fiqa --exp_name p_written_100k_vicuna_prompt_2_filtered_70 (weak_num=100k by default)
 ## train
 bash zhiyuan/retriever/col_bert/train_colbert.sh -g 0,1,2,3 -d fiqa -e p_written_100k_vicuna_prompt_2_filtered_70 -m 1200 -s 60 -b 128
 ## test
@@ -153,12 +161,12 @@ bash zhiyuan/retriever/col_bert/test_colbert.sh -g 0,1,2,3 -d msmarco -e p_writt
 # fiqa
 docker pull beir/pyserini-fastapi 
 docker run -p 8002:8000 -it --name fiqa --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name p_written_100k_vicuna_prompt_2_filtered_70 --topk 30
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name p_written_100k_vicuna_prompt_2_filtered_70 --topk 1000
 
 # msmarco
 docker pull beir/pyserini-fastapi 
 docker run -p 8000:8000 -it --name msmarco --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name p_written_100k_vicuna_prompt_3_filtered_30 --topk 30
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name p_written_100k_vicuna_prompt_3_filtered_30 --topk 1000
 ```
 
 ### SPTAR
@@ -166,10 +174,10 @@ python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msma
 #### DPR
 ```
 # fiqa
-python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps llama_7b_100k_fixed_v3_best_llama_prompt_2_filtered_70
+python zhiyuan/dpr_eval.py --dataset_name fiqa --version v1 --gpu_id 0 --train_num 50 -exps llama_7b_100k_fixed_v3_best_llama_prompt_2_filtered_70 --weak_num 100k
 
 # msmarco
-python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps llama_7b_100k_fixed_v4_best_llama_prompt_3_filtered_30
+python zhiyuan/dpr_eval.py --dataset_name msmarco --version v1 --gpu_id 0 --train_num 50 -exps llama_7b_100k_fixed_v4_best_llama_prompt_3_filtered_30 --weak_num 100k
 ```
 #### ColBERT
 ```
@@ -194,12 +202,12 @@ bash zhiyuan/retriever/col_bert/test_colbert.sh -g 0,1,2,3 -d msmarco -e llama_7
 # fiqa
 docker pull beir/pyserini-fastapi 
 docker run -p 8002:8000 -it --name fiqa --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name llama_7b_100k_fixed_v3_best_llama_prompt_2_filtered_70 --topk 50
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name fiqa --exp_name llama_7b_100k_fixed_v3_best_llama_prompt_2_filtered_70 --topk 1000
 
 # msmarco
 docker pull beir/pyserini-fastapi 
 docker run -p 8000:8000 -it --name msmarco --rm beir/pyserini-fastapi:latest
-python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name llama_7b_100k_fixed_v4_best_llama_prompt_3_filtered_30 --topk 50
+python zhiyuan/retriever/bm25ce/eval/evaluate_bm25_ce_dpr.py --dataset_name msmarco --exp_name llama_7b_100k_fixed_v4_best_llama_prompt_3_filtered_30 --topk 1000
 ```
 ## Weak Data Filter Module
 llama_7b_100k_fixed_v4_best_llama_prompt_3_filtered_30 comes from filtering llama_7b_100k_fixed_v4_best_llama_prompt_3 by `zhiyuan/filter/bm25anserini_split.py` with `topk=30` where llama_7b_100k_fixed_v4_best_llama_prompt_3 contains raw 100k weak document-query pairs generated by soft prompt augmentor module. 
@@ -211,10 +219,12 @@ BM25, DPR and ColBERT utilized in this repo are based on their offical implement
 # Citing
 If you find our SPTAR helpful, please cite our paper [Soft Prompt Tuning for Augmenting Dense Retrieval with Large Language Models](https://arxiv.org/abs/2307.08303):
 ```
-@article{peng2023soft,
-  title={Soft Prompt Tuning for Augmenting Dense Retrieval with Large Language Models},
-  author={Peng, Zhiyuan and Wu, Xuyang and Fang, Yi},
-  journal={arXiv preprint arXiv:2307.08303v2},
-  year={2023}
+@misc{peng2024soft,
+      title={Soft Prompt Tuning for Augmenting Dense Retrieval with Large Language Models}, 
+      author={Zhiyuan Peng and Xuyang Wu and Qifan Wang and Yi Fang},
+      year={2024},
+      eprint={2307.08303},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR}
 }
 ```
