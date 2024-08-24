@@ -1,0 +1,14 @@
+{
+  "base_model_name_or_path": "/ssd/public_datasets/llama/llama_to_hf/llama-7b",
+  "inference_mode": true,
+  "num_attention_heads": 32,
+  "num_layers": 32,
+  "num_transformer_submodules": 1,
+  "num_virtual_tokens": 50,
+  "peft_type": "PROMPT_TUNING",
+  "prompt_tuning_init": "TEXT",
+  "prompt_tuning_init_text": "please generate query for this document",
+  "task_type": "CAUSAL_LM",
+  "token_dim": 4096,
+  "tokenizer_name_or_path": "/ssd/public_datasets/llama/llama_to_hf/llama-7b"
+}
