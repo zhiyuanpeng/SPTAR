@@ -219,12 +219,21 @@ BM25, DPR and ColBERT utilized in this repo are based on their offical implement
 # Citing
 If you find our SPTAR helpful, please cite our paper [Soft Prompt Tuning for Augmenting Dense Retrieval with Large Language Models](https://arxiv.org/abs/2307.08303):
 ```
-@misc{peng2024soft,
-      title={Soft Prompt Tuning for Augmenting Dense Retrieval with Large Language Models}, 
-      author={Zhiyuan Peng and Xuyang Wu and Qifan Wang and Yi Fang},
-      year={2024},
-      eprint={2307.08303},
-      archivePrefix={arXiv},
-      primaryClass={cs.IR}
+@article{DBLP:journals/kbs/PengWWF25,
+  author       = {Zhiyuan Peng and
+                  Xuyang Wu and
+                  Qifan Wang and
+                  Yi Fang},
+  title        = {Soft prompt tuning for augmenting dense retrieval with large language
+                  models},
+  journal      = {Knowl. Based Syst.},
+  volume       = {309},
+  pages        = {112758},
+  year         = {2025},
+  url          = {https://doi.org/10.1016/j.knosys.2024.112758},
+  doi          = {10.1016/J.KNOSYS.2024.112758},
+  timestamp    = {Wed, 08 Jan 2025 21:12:31 +0100},
+  biburl       = {https://dblp.org/rec/journals/kbs/PengWWF25.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 ```
